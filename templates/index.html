@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Principal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="position-relative text-center text-white">
+  <div class="container-fluid position-relative py-4">
+    <h1 class="display-4 fw-bold mb-3">Cementerio CG LPaz</h1>
+    <p class="lead mb-4">
+      Un espacio sagrado donde la memoria perdura. Nuestro sistema web facilita la gestión de servicios, registros y trámites, 
+      ofreciendo a las familias una atención respetuosa y eficiente en cada detalle.
+    </p>
+    <a href="#servicios" class="btn btn-outline-light btn-lg px-4">Ver nuestros servicios</a>
+  </div>
+</section>
+
+<!-- CSS para Hero Section -->
+<style>
+.hero-section {
+    height: 100vh; /* Ocupa toda la pantalla */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.hero-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* Difumina la imagen */
+    z-index: 1;
+}
+
+.hero-section .container {
+    z-index: 2; /* Texto encima del overlay */
+}
+
+.hero-section h1,
+.hero-section p {
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6); /* Sombra para mejor lectura */
+}
+</style>
+</section>
+
+<!-- Servicios -->
+<section id="servicios" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5 fw-bold">Nuestros Servicios</h2>
+
+    <div class="row g-4">
+
+      {% for tipo in tipo_servicios %}
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+
+          <!-- Imagen del servicio -->
+          {% if tipo.imagen %}
+            <img 
+              src="{{ url_for('static', filename='uploads/servicios/' ~ tipo.imagen) }}" 
+              class="card-img-top" 
+              alt="{{ tipo.tipo }}" 
+              style="width: 100%; height: 220px; object-fit: cover;">
+          {% else %}
+            <!-- Imagen por defecto si no hay -->
+            <img 
+              src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2" 
+              class="card-img-top" 
+              alt="{{ tipo.tipo }}">
+          {% endif %}
+
+          <!-- Cuerpo de tarjeta -->
+          <div class="card-body text-center">
+            <h5 class="card-title fw-bold">{{ tipo.tipo }}</h5>
+            <p class="card-text">{{ tipo.descripcion }}</p>
+            <p class="text-primary fw-bold">Bs {{ tipo.precio | round(2)}}</p>
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+
+      {% if tipo_servicios|length == 0 %}
+      <p class="text-center text-muted">No hay servicios registrados actualmente.</p>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

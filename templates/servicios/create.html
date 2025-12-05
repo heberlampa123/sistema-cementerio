@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Servicio{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Nuevo Servicio</h2>
+
+        <form action="{{ url_for('servicio.create') }}" method="POST" class="cliente-form"
+            enctype="multipart/form-data">
+
+            <div class="input-group mb-3">
+                <label class="form-label">Usuario</label>
+                <input type="text" class="form-input" value="{{ session['usuario_nombre'] }}" readonly>
+
+                <!-- ✔ Campo real que se enviará al servidor -->
+                <input type="hidden" name="usuario_id" value="{{ session['usuario_id'] }}">
+            </div>
+
+
+            <div class="input-group mb-3">
+                <label class="form-label">Categoria</label>
+                <select name="tipo_servicio_id" id="tipo_servicio" class="form-input" required>
+                    <option value="" data-precio="0">Seleccione una categoria</option>
+                    {% for tipo_servicio in tipo_servicios %}
+                    <option value="{{ tipo_servicio.id }}" data-precio="{{ tipo_servicio.precio }}">
+                        {{ tipo_servicio.tipo }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="asignacion" class="form-label">Espacio</label>
+                <select name="asignacion_id" id="asignacion" class="form-input">
+                    <option value="" data-precio="0" data-usado="0">Seleccione un espacio</option>
+
+                    {% for asignacion in asignaciones %}
+                    <option value="{{ asignacion.id }}" data-precio="{{ asignacion.precio }}"
+                        data-usado="{% if asignacion.id in asignaciones_usadas %}1{% else %}0{% endif %}">
+                        {{ asignacion.espacio.ubicacion }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="btn-opciones d-flex justify-content-between align-items-center" style="gap: 10px;">
+                <div class="input-group">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-input" name="fecha" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select name="estado" class="form-input" required>
+                        <option value="En proceso">En proceso</option>
+                        <option value="Finalizado">Finalizado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="total" class="form-label">Total</label>
+                <input type="text" id="total" class="form-input" name="total" readonly>
+            </div>
+
+            <button type="submit" class="btn-guardar">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const tipoServicioSelect = document.getElementById("tipo_servicio");
+        const asignacionSelect = document.getElementById("asignacion");
+        const totalInput = document.getElementById("total");
+
+        function calcularTotal() {
+            let total = 0;
+
+            // Precio del tipo de servicio
+            const tsOption = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
+            const precioTS = parseFloat(tsOption.dataset.precio) || 0;
+
+            // Precio de la asignación
+            const asigOption = asignacionSelect.options[asignacionSelect.selectedIndex];
+            const precioAsig = parseFloat(asigOption.dataset.precio) || 0;
+
+            // Verificar si la asignación ya está usada
+            const asignacionUsada = asigOption.dataset.usado === "1";
+
+            // Sumar solo si NO está usada
+            total = precioTS + (asignacionUsada ? 0 : precioAsig);
+
+            totalInput.value = total.toFixed(2);
+        }
+
+        tipoServicioSelect.addEventListener("change", calcularTotal);
+        asignacionSelect.addEventListener("change", calcularTotal);
+    });
+</script>
+
+{% endblock %}

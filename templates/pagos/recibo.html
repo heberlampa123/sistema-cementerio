@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Recibo de Pago #{{ pago.id }}{% endblock %}
+
+{% block content %}
+
+<div class="recibo-container">
+
+    <!-- ENCABEZADO -->
+    <div class="recibo-header">
+        <a class="navbar-brand me-auto table-hover" href="#">CG LPaz</a>
+        <h2>RECIBO DE PAGO</h2>
+        <div class="recibo-subtitle">Pago Nº {{ pago.id }}</div>
+        <div class="recibo-subtitle">{{ pago.fecha.strftime("%Y-%m-%d %H:%M") }}</div>
+    </div>
+    <p style="color: rgb(79, 81, 81);">________________________________________________</p>
+    <!-- CUERPO -->
+    <div class="recibo-section">
+        <p><span class="recibo-bold">Servicio:</span>
+            {% if pago.servicio %}
+                {% if pago.servicio.tipo_servicio %}
+                    {{ pago.servicio.tipo_servicio.tipo }}
+                {% else %}
+                    Servicio #{{ pago.servicio.id }}
+                {% endif %}
+            {% else %}
+                -
+            {% endif %}
+        </p>
+
+        <p><span class="recibo-bold">Registrado por:</span>
+            {{ pago.usuario.nombre if pago.usuario else '-' }}
+        </p>
+
+        <p><span class="recibo-bold">Método:</span> {{ pago.metodo }}</p>
+
+        <p><span class="recibo-bold">Monto:</span> <strong>Bs {{ "%.2f"|format(pago.monto) }}</strong></p>
+
+        <p><span class="recibo-bold">Observaciones:</span> {{ pago.observaciones or '-' }}</p>
+    </div>
+
+    <hr>
+
+    <!-- PIE -->
+    <div class="recibo-actions">
+        <a href="{{ url_for('pago.index') }}" class="btn btn-outline-secondary">Volver</a>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
+    </div>
+
+</div>
+
+{% endblock %}

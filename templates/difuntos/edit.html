@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Difunto{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Editar Difunto</h2>
+
+        <form action="{{ url_for('difunto.edit', id=difunto.id) }}" method="POST" class="cliente-form" enctype="multipart/form-data">
+            
+            <div class="input-group">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-input" name="nombre" value="{{ difunto.nombre }}" required>
+            </div>
+
+            <div class="input-group">
+                <label for="paterno" class="form-label">Paterno</label>
+                <input type="text" class="form-input" name="paterno" value="{{ difunto.paterno }}" required>
+            </div>
+
+            <div class="input-group">
+                <label for="materno" class="form-label">Materno</label>
+                <input type="text" class="form-input" name="materno" value="{{ difunto.materno }}" required>
+            </div>
+
+            <div class="btn-opciones d-flex justify-content-between align-items-center" style="gap: 10px;">
+                <div class="input-group">
+                    <label for="fecha_nac" class="form-label">Fecha de Nacimiento</label>
+                    <input type="date" class="form-input" name="fecha_nac" value="{{ difunto.fecha_nac }}">
+                </div>
+
+                <div class="input-group">
+                    <label for="fecha_dif" class="form-label">Fecha de Defunción</label>
+                    <input type="date" class="form-input" name="fecha_dif" value="{{ difunto.fecha_dif }}" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="foto" class="form-label">Fotografía</label>
+                <input type="file" class="form-control" id="foto" name="foto" accept="image/*" style="width: max-content;">
+                {% if difunto.foto %}
+                <p id="foto-actual" style="margin-top: 5px; font-size: 0.9rem; color: #555;">
+                    Imagen actual: <strong>{{ difunto.foto.split('/')[-1] }}</strong>
+                </p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-guardar">Actualizar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Espacio{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Nuevo Espacio</h2>
+
+        <form action="{{ url_for('espacio.create') }}" method="POST" class="cliente-form" enctype="multipart/form-data">
+            
+            <div class="input-group mb-3">
+                <label class="form-label">Tipo</label>
+                <select name="tipo" class="form-input" required>
+                    <option value="Nicho">Nicho</option>
+                    <option value="Tumba">Tumba</option>
+                    <option value="Mausoleo">Mausoleo</option>
+                    <option value="Columbario">Columbario</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="ubicacion" class="form-label">Ubicacion</label>
+                <input type="text" class="form-input" name="ubicacion" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-input" disabled>
+                    <option value="Disponible">Disponible</option>
+                    <option value="Ocupado">Ocupado</option>
+                    <option value="Reservado">Reservado</option>
+                </select>
+                <input type="hidden" name="estado" value="Disponible">
+            </div>
+
+            <button type="submit" class="btn-guardar">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

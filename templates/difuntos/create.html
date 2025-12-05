@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Difunto{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Nuevo Difunto</h2>
+
+        <form action="{{ url_for('difunto.create') }}" method="POST" class="cliente-form" enctype="multipart/form-data">
+            
+            <div class="input-group">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-input" name="nombre" required>
+            </div>
+
+            <div class="input-group">
+                <label for="paterno" class="form-label">Paterno</label>
+                <input type="text" class="form-input" name="paterno" required>
+            </div>
+
+            <div class="input-group">
+                <label for="materno" class="form-label">Materno</label>
+                <input type="text" class="form-input" name="materno" required>
+            </div>
+
+            <div class="btn-opciones d-flex justify-content-between align-items-center" style="gap: 10px;">
+                <div class="input-group">
+                    <label for="fecha_nac" class="form-label">Fecha de Nacimiento</label>
+                    <input type="date" class="form-input" name="fecha_nac">
+                </div>
+ 
+                <div class="input-group">
+                    <label for="fecha_dif" class="form-label">Fecha de Defunción</label>
+                    <input type="date" class="form-input" name="fecha_dif" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="foto" class="form-label">Fotografía</label>
+                <input type="file" class="form-control" id="foto" name="foto" accept="image/*" style="width: max-content;">
+            </div>
+
+            <button type="submit" class="btn-guardar">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

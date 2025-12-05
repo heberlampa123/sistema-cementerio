@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Usuario{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Nuevo Usuario</h2>
+
+        <form action="{{ url_for('usuario.create') }}" method="POST" class="cliente-form" enctype="multipart/form-data">
+
+            <div class="input-group mb-3">
+                <label for="nombre" class="form-label">Nombre completo</label>
+                <input type="text" class="form-input" name="nombre" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="username" class="form-label">Nombre de usuario</label>
+                <input type="email" class="form-input" name="username" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-input" name="password" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="rol" class="form-label">Rol</label>
+                <select name="rol" class="form-input" required>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Personal operativo">Personal operativo</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-guardar">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

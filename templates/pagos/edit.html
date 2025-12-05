@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Pago #{{ pago.id }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Editar Pago</h2>
+
+        <form action="{{ url_for('pago.edit', id=pago.id) }}" method="POST" class="cliente-form">
+            <div class="input-group mb-3">
+                <label class="form-label">Servicio</label>
+                <select name="servicio_id" class="form-input" required>
+                    <option value="">Seleccione un servicio</option>
+                    {% for servicio in servicios %}
+                        <option value="{{ servicio.id }}" {% if pago.servicio and pago.servicio.id==servicio.id %}selected{% endif %}>
+                            {% if servicio.tipo_servicio %}{{ servicio.tipo_servicio.tipo }}{% else %}Servicio #{{ servicio.id }}{% endif %}
+                            — {{ servicio.fecha.strftime("%Y-%m-%d") if servicio.fecha else "" }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <label class="form-label">Método</label>
+                <select name="metodo" class="form-input" required>
+                    <option value="Efectivo" {% if pago.metodo=='Efectivo' %}selected{% endif %}>Efectivo</option>
+                    <option value="Tarjeta" {% if pago.metodo=='Tarjeta' %}selected{% endif %}>Tarjeta</option>
+                    <option value="Transferencia" {% if pago.metodo=='Transferencia' %}selected{% endif %}>Transferencia</option>
+                    <option value="Otro" {% if pago.metodo=='Otro' %}selected{% endif %}>Otro</option>
+                </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <label class="form-label">Monto (Bs)</label>
+                <input type="number" name="monto" class="form-input" step="0.01" min="0" value="{{ pago.monto }}" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label class="form-label">Observaciones</label>
+                <textarea name="observaciones" class="form-input" rows="3">{{ pago.observaciones }}</textarea>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button class="btn-guardar" type="submit">Actualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

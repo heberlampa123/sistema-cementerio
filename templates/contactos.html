@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Contactos{% endblock %}
+{% block content %}
+<section id="contacto" class="py-5">
+    <div class="container-fluid">
+        <div class="row g-5 align-items-center">
+
+            <!-- Lado izquierdo: Iconos de contacto -->
+            <div class="col-md-6 d-flex flex-column align-items-start">
+                <div class="container-fluid">
+                    <h3 class="form">Contáctanos</h3>
+                    <p>Síguenos y contáctanos a través de nuestras redes sociales para conocer más sobre nuestros
+                        servicios,
+                        novedades y atención al público estamos aquí para ayudarte y resolver tus dudas</p>
+
+                    <ul class="list-unstyled mt-4">
+                        <li class="mb-3 d-flex align-items-center contact-item">
+                            <a href="https://www.whatsapp.com/" target="_blank">
+                                <img src="{{ url_for('static', filename='img/whatsapp.png') }}" alt="WhatsApp"
+                                    class="me-3" style="width:32px; height:32px;">
+                            </a>
+                            <span>+591 71234567</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center contact-item">
+                            <a href="https://www.facebook.com/" target="_blank">
+                                <img src="{{ url_for('static', filename='img/facebook.png') }}" alt="Facebook"
+                                    class="me-3" style="width:32px; height:32px;">
+                            </a>
+                            <span> CG LPaz </span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center contact-item">
+                            <a href="https://www.tiktok.com/" target="_blank">
+                                <img src="{{ url_for('static', filename='img/tiktok.png') }}" alt="TikTok" class="me-3"
+                                    style="width:32px; height:32px;">
+                            </a>
+                            <span>@CGLPazOficial</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center contact-item">
+                            <a href="https://accounts.google.com/">
+                                <img src="{{ url_for('static', filename='img/email.png') }}" alt="Email" class="me-3"
+                                    style="width:32px; height:32px;">
+                            </a>
+                            <span>CGLPaz@gamail.com</span>
+                        </li>
+                        <a href="#ubicacion" class="btn btn-outline-light btn-lg px-4">Ver nuestra ubicación</a>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Lado derecho: Formulario -->
+            <div class="col-md-6 align-items-end">
+                <div class="card shadow-sm p-4">
+                    <h4 class="form-title">Envíanos un mensaje</h4>
+                    <form action="#" method="POST" class="cliente-form">
+                        <div class="input-group">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-input" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="email" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-input" id="email" name="email" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="mensaje" class="form-label">Mensaje</label>
+                            <textarea class="form-input" id="mensaje" name="mensaje" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</section>
+<section id="ubicacion"  class="py-4 bg-light">
+  <div class="container fluid text-center">
+            <!-- debajo del formulario -->
+                <h5>Nuestra Ubicacion</h5>
+
+                <!-- Google Maps por coordenadas (editar lat/lng y zoom) -->
+                <div class="container">
+                    <iframe src="https://maps.google.com/maps?q=-16.496656,-68.151477&z=16&output=embed"
+                        style="border:0; height: 575px; width: 100%;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <p class="mb-0">
+                    <a href="https://www.google.com/maps/search/?api=1&query=-16.496656,-68.151477" target="_blank"
+                        rel="noopener" class="d-inline-flex align-items-center">
+                        <i class="bi bi-box-arrow-up-right me-2" aria-hidden="true"></i>
+                        Abrir en Google Maps (ver en pantalla completa)
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

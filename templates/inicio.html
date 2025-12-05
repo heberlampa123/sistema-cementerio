@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Panel{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+    <!-- Bienvenida -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1 small-welcome" >Panel de Control</h3>
+            <div class="small-welcome">
+                Bienvenido, {{ session['usuario_nombre'] or usuario_nombre or 'Usuario' }}
+            </div>
+        </div>
+        <div class="text-end small-welcome">
+            <div>{{ (now if now is defined else "") }}</div>
+            <div class="mt-1"><small>Rol: {{ session['usuario_rol'] or '-' }}</small></div>
+        </div>
+    </div>
+
+    <!-- Resumenes -->
+    <div class="dashboard-grid mb-4">
+        <div class="card card-compact p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon bg-light">
+                    <i class="bi bi-briefcase fs-4 text-primary"></i>
+                </div>
+                <div>
+                    <div class="small-muted">Servicios</div>
+                    <h3 class="mb-0">{{ total_servicios|default(0) }}</h3>
+                    <div class="small-muted">Totales registrados</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-compact p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon bg-light">
+                    <i class="bi bi-grid-1x2 fs-4 text-success"></i>
+                </div>
+                <div>
+                    <div class="small-muted">Asignaciones</div>
+                    <h3 class="mb-0">{{ total_asignaciones|default(0) }}</h3>
+                    <div class="small-muted">Espacios asignados</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-compact p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon bg-light">
+                    <i class="bi bi-file-earmark-text fs-4 text-warning"></i>
+                </div>
+                <div>
+                    <div class="small-muted">Contratos</div>
+                    <h3 class="mb-0">{{ total_contratos|default(0) }}</h3>
+                    <div class="small-muted">Contratos activos</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-compact p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon bg-light">
+                    <i class="bi bi-cash-stack fs-4 text-danger"></i>
+                </div>
+                <div>
+                    <div class="small-muted">Pagos</div>
+                    <h3 class="mb-0">{{ total_pagos|default(0) }}</h3>
+                    <div class="small-muted">Registrados</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ulltimos Registros relevantes -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card card-compact p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Últimos Servicios</h6>
+                    <a href="{{ url_for('servicio.index') }}" class="small-muted">Ver todos</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Tipo</th>
+                                <th>Asignación</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th class="text-end">Total (Bs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if recent_servicios %}
+                            {% for s in recent_servicios[:3] %}
+                            <tr>
+                                <td>{{ s.id }}</td>
+                                <td>{% if s.tipo_servicio %}{{ s.tipo_servicio.tipo }}{% else %}-{% endif %}</td>
+                                <td>
+                                    {% if s.asignacion and s.asignacion.espacio %}
+                                    {{ s.asignacion.espacio.ubicacion }}
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td>{{ s.fecha.strftime("%Y-%m-%d") if s.fecha else '-' }}</td>
+                                <td>
+                                    <span
+                                        class="badge bg-{{ 'success' if s.estado=='Finalizado' else 'warning' if s.estado=='En proceso' else 'secondary' }}">{{
+                                        s.estado }}</span>
+                                </td>
+                                <td class="text-end">{{ "%.2f"|format(s.total or 0) }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center small-muted py-3">No hay servicios recientes</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- optional: recent assignments -->
+            <div class="card card-compact p-3 mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Últimas Asignaciones</h6>
+                    <a href="{{ url_for('asignacion.index') }}" class="small-muted">Ver todas</a>
+                </div>
+                <div class="small-muted">
+                    <ul class="list-unstyled mb-0">
+                        {% for a in recent_asignaciones[:2] %}
+                        <li class="py-2 border-bottom">
+                            <strong>{{ a.espacio.ubicacion if a.espacio else '—' }}</strong>
+                            <div class="small-muted">{{ a.fecha_asignacion.strftime("%Y-%m-%d") if a.fecha_asignacion
+                                else '' }} - {{ a.responsable }}</div>
+                        </li>
+                        {% else %}
+                        <li class="text-center py-2 small-muted">Sin asignaciones recientes</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card card-compact p-3">
+                <h6 class="mb-3">Acciones rápidas</h6>
+                <div class="d-grid gap-2 quick-actions">
+                    <a href="{{ url_for('servicio.create') }}"
+                        class="btn btn-primary btn-lg d-flex align-items-center justify-content-center">
+                        <i class="bi bi-clipboard-plus me-2"></i> Nuevo Servicio
+                    </a>
+                    <a href="{{ url_for('asignacion.create') }}"
+                        class="btn btn-outline-secondary btn-lg d-flex align-items-center justify-content-center">
+                        <i class="bi bi-card-checklist me-2"></i> Nueva Asignación
+                    </a>
+                    <a href="{{ url_for('contrato.create') }}"
+                        class="btn btn-outline-secondary btn-lg d-flex align-items-center justify-content-center">
+                        <i class="bi bi-file-earmark-text me-2"></i> Nuevo Contrato
+                    </a>
+                    <a href="{{ url_for('pago.create') }}"
+                        class="btn btn-outline-success btn-lg d-flex align-items-center justify-content-center">
+                        <i class="bi bi-cash-stack me-2"></i> Registrar Pago
+                    </a>
+                </div>
+            </div>
+
+            <div class="card card-compact p-3 mt-3">
+                <h6 class="mb-3">Resumen rápido</h6>
+                <div class="small-muted mb-2">Espacios ocupados</div>
+                <div class="small-muted">Capacidad usada: <strong>{{ espacios_ocupados|default(0) }}</strong> /
+                    <strong>{{ espacios_totales|default(0) }}</strong></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

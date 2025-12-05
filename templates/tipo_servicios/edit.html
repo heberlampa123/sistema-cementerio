@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Servicio{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Editar Servicio</h2>
+
+        <form action="{{ url_for('tipo_servicio.edit', id=tipo_servicio.id) }}" method="POST" class="cliente-form" enctype="multipart/form-data">
+            
+            <div class="input-group">
+                <label for="tipo" class="form-label">Tipo</label>
+                <input type="text" class="form-input" name="tipo" value="{{tipo_servicio.tipo}}" required>
+            </div>
+
+            <div class="input-group">
+                <label for="descripcion" class="form-label">Descripcion</label>
+                <input type="text" class="form-input" name="descripcion" value="{{tipo_servicio.descripcion}}" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="precio" class="form-label">Precio</label>
+                <input type="text" class="form-input" name="precio" min="0" step="0.01" value="{{tipo_servicio.precio | round(2)}}" required>
+            </div>
+
+            <div class="input-group">
+                <label for="imagen" class="form-label">Imagen</label>
+                <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" style="width: max-content;">
+                {% if tipo_servicio.imagen %}
+                <p id="foto-actual" style="margin-top: 5px; font-size: 0.9rem; color: #555;">
+                    Imagen actual: <strong>{{ tipo_servicio.imagen.split('/')[-1] }}</strong>
+                </p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-guardar">Actualizar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

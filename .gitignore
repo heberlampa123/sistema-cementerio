@@ -1,0 +1,9 @@
+instance/cementerio.db
+__pycache__/
+controllers/__pycache__/
+models/__pycache__/
+views/__pycache__/
+utils/__pycache__/
+static/contratos/
+static/uploads/
+venv/

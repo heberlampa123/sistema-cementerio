@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+
+<body class="body-login">
+    <div class="container-fluid">
+        <form class="mx-auto form-login" method="post">
+            <div class="text-center">
+                <img src="static/img/Lapida.webp" alt="">
+            </div>
+            <!-- Mostrar mensajes flash con Bootstrap -->
+            <div class="flash-container"style ="z-index: 2000;">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-lg" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="exampleInputEmail1" class="form-label">Nombre de usuario</label>
+                <input type="email" class="form-control" name="username" id="exampleInputEmail1"
+                    aria-describedby="emailHelp" required>
+
+            </div>
+            <div class="mb-3 position-relative">
+                <label for="exampleInputPassword1" class="form-label">Contraseña</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" name="password" id="exampleInputPassword1" required>
+                    <button class="btn btn-outline-secondary toggle-password" type="button" id="togglePassword">
+                        <i class="bi bi-eye-slash" id="iconoPassword"></i>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-login mt-4">Acceder</button>
+
+            <div class="mt-4 text-center">
+                <a href="#" class="link-secondary">¿Olvidaste tu contraseña?</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+        </script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+
+</html>

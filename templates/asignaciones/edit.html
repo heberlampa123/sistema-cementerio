@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Asignacion{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Editar Asignacion</h2>
+
+        <form action="{{ url_for('asignacion.edit', id=asignacion.id) }}" method="POST" class="cliente-form"
+            enctype="multipart/form-data">
+
+            <div class="input-group mb-3">
+                <label for="difunto_id" class="form-label">Difunto</label>
+                <select name="difunto_id" class="form-input" id="" required>
+                    <option value="">Seleccione un difunto</option>
+                    {% for difunto in difuntos%}
+                    <option value="{{difunto.id}}" {% if difunto.id == asignacion.difunto_id %}selected{%endif%}>{{difunto.nombre}} {{difunto.paterno}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="espacio_id" class="form-label">Espacio</label>
+                <select name="espacio_id" class="form-input" id="" required>
+                    <option value="">Seleccione un espacio</option>
+                    {% for espacio in espacios%}
+                    <option value="{{espacio.id}}" {% if espacio.id == asignacion.espacio_id %}selected{%endif%}>{{espacio.tipo}} - {{espacio.ubicacion}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="btn-opciones d-flex justify-content-between align-items-center" style="gap: 10px;">
+                <div class="input-group">
+                    <label for="fecha_asignacion" class="form-label">Fecha de asignacion</label>
+                    <input type="date" class="form-input" name="fecha_asignacion" value="{{asignacion.fecha_asignacion.strftime('%Y-%m-%d')}}" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="fecha_liberacion" class="form-label">Fecha de liberacion</label>
+                    <input type="date" class="form-input" name="fecha_liberacion" value="{{asignacion.fecha_liberacion.strftime('%Y-%m-%d')}}" required>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="responsable" class="form-label">Responsable</label>
+                <input type="text" class="form-input" name="responsable" value="{{asignacion.responsable}}" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="ci_responsable" class="form-label">Ci del responsable</label>
+                <input type="text" class="form-input" name="ci_responsable" value="{{asignacion.ci_responsable}}" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="telef_responsable" class="form-label">Telefono del responsable</label>
+                <input type="text" class="form-input" name="telef_responsable" value="{{asignacion.telef_responsable}}" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="precio" class="form-label">Precio</label>
+                <input type="text" class="form-input" name="precio" min="0" step="0.01" value="{{asignacion.precio | round(2)}}" required>
+            </div>
+
+            <button type="submit" class="btn-guardar">Actualizar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

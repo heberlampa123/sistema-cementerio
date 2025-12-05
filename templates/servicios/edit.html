@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Servicio{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Editar Servicio</h2>
+
+        <form action="{{ url_for('servicio.edit', id=servicio.id) }}" method="POST" class="cliente-form" enctype="multipart/form-data">
+
+            <div class="input-group mb-3">
+                <label class="form-label">Usuario</label>
+                <select name="usuario_id" class="form-input" required>
+                    {% for u in usuarios %}
+                        <option value="{{ u.id }}" {% if u.id == servicio.usuario_id %}selected{% endif %}>
+                            {{ u.nombre if u.nombre is defined else (u.fullname if u.fullname is defined else u.id) }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <label class="form-label">Categoria</label>
+                <select name="tipo_servicio_id" id="tipo_servicio" class="form-input" required>
+                    <option value="" data-precio="0">Seleccione una categoria</option>
+                    {% for tipo_servicio in tipo_servicios %}
+                    <option value="{{ tipo_servicio.id }}" data-precio="{{ tipo_servicio.precio }}"
+                        {% if tipo_servicio.id == servicio.tipo_servicio_id %}selected{% endif %}>
+                        {{ tipo_servicio.tipo }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Asignacion (espacio) -->
+            <div class="input-group mb-3">
+                <label for="asignacion" class="form-label">Espacio</label>
+                <select name="asignacion_id" id="asignacion" class="form-input">
+                    <option value="" data-precio="0" data-usado="0">Seleccione un espacio</option>
+
+                    {% for asignacion in asignaciones %}
+                    {# si la asignacion está en asignaciones_usadas y NO es la asignacion actual del servicio -> marcada como usada #}
+                    {% set usado = 1 if (asignacion.id in asignaciones_usadas and asignacion.id != servicio.asignacion_id) else 0 %}
+                    <option value="{{ asignacion.id }}" data-precio="{{ asignacion.precio }}" data-usado="{{ usado }}"
+                        {% if servicio.asignacion_id and asignacion.id == servicio.asignacion_id %}selected{% endif %}>
+                        {{ asignacion.espacio.ubicacion }}{% if usado == 1 %} - (ocupado){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="btn-opciones d-flex justify-content-between align-items-center" style="gap: 10px;">
+                <div class="input-group">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-input" name="fecha" value="{{ servicio.fecha.strftime('%Y-%m-%d') if servicio.fecha else '' }}" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select name="estado" class="form-input" required>
+                        <option value="En proceso" {% if servicio.estado == 'En proceso' %}selected{% endif %}>En proceso</option>
+                        <option value="Finalizado" {% if servicio.estado == 'Finalizado' %}selected{% endif %}>Finalizado</option>
+                        <option value="Cancelado" {% if servicio.estado == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="total" class="form-label">Total</label>
+                <input type="text" id="total" class="form-input" name="total" readonly value="{{ '%.2f' % servicio.total if servicio.total is not none else '' }}">
+            </div>
+            <button type="submit" class="btn-guardar btn btn-primary">Actualizar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const tipoServicioSelect = document.getElementById("tipo_servicio");
+    const asignacionSelect = document.getElementById("asignacion");
+    const totalInput = document.getElementById("total");
+
+    function calcularTotal() {
+        let total = 0;
+
+        // Precio del tipo de servicio
+        const tsOption = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
+        const precioTS = parseFloat(tsOption.dataset.precio) || 0;
+
+        // Precio de la asignación
+        const asigOption = asignacionSelect.options[asignacionSelect.selectedIndex];
+        const precioAsig = parseFloat(asigOption ? (asigOption.dataset.precio || 0) : 0);
+
+        // Verificar si la asignación ya está usada (dataset.usado === "1")
+        const asignacionUsada = asigOption ? (asigOption.dataset.usado === "1") : false;
+
+        // Sumar solo si NO está usada
+        total = precioTS + (asignacionUsada ? 0 : precioAsig);
+
+        totalInput.value = total.toFixed(2);
+    }
+
+    tipoServicioSelect.addEventListener("change", calcularTotal);
+    asignacionSelect.addEventListener("change", calcularTotal);
+
+    // Llamada inicial para mostrar el total actual al cargar la página
+    calcularTotal();
+});
+</script>
+
+{% endblock %}

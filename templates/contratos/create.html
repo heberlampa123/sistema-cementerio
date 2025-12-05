@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Contrato{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Nueva Contrato</h2>
+
+        <form action="{{ url_for('contrato.create') }}" method="POST" class="cliente-form"
+            enctype="multipart/form-data">
+
+            <div class="input-group mb-3">
+                <label class="form-label">Usuario</label>
+                <input type="text" class="form-input" value="{{ session['usuario_nombre'] }}" readonly>
+
+                <!-- ✔ Campo real que se enviará al servidor -->
+                <input type="hidden" name="usuario_id" value="{{ session['usuario_id'] }}">
+            </div>
+
+            <div class="input-group mb-3">
+                <label for="asignacion" class="form-label">Espacio</label>
+                <select name="asignacion_id" class="form-input" required>
+                    <option value="">Seleccione un espacio</option>
+
+                    {% for asignacion in asignaciones %}
+                    <option value="{{ asignacion.id }}">
+                        {{ asignacion.espacio.ubicacion }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+            </div>
+
+
+            <div class="input-group mb-3">
+                <label for="fecha" class="form-label">Fecha del contrato</label>
+                <input type="date" class="form-input" name="fecha" required>
+            </div>
+
+
+            <div class="input-group mb-3">
+                <label for="Condiciones" class="form-label">Condiciones</label>
+                <input type="text" class="form-input" name="condiciones" required>
+            </div>
+
+            <button type="submit" class="btn-guardar">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

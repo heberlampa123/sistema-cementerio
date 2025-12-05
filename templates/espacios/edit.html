@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Espacio{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Editar Espacio</h2>
+
+        <form action="{{ url_for('espacio.edit', id=espacio.id) }}" method="POST" class="cliente-form" enctype="multipart/form-data">
+            
+            <div class="input-group mb-4">
+                <label class="form-label">Tipo</label>
+                <select name="tipo" class="form-input" required>
+                    <option value="Nicho" {% if espacio and espacio.tipo=='Nicho' %}selected{% endif %}>Nicho</option>
+                    <option value="Tumba" {% if espacio and espacio.tipo=='Tumba' %}selected{% endif %}>Tumba</option>
+                    <option value="Mausoleo" {% if espacio and espacio.tipo=='Mausoleo' %}selected{% endif %}>Mausoleo</option>
+                    <option value="Columbario" {% if espacio and espacio.tipo=='Columbario' %}selected{% endif %}>Columbario</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="ubicacion" class="form-label">Ubicacion</label>
+                <input type="text" class="form-input" name="ubicacion" value="{{ espacio.ubicacion if espacio else '' }}" required>
+            </div>
+
+            <div class="input-group mb-4">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-input" disabled>
+                    <option value="Disponible" {% if espacio and espacio.estado=='Disponible' %}selected{% endif %}>
+                        Disponible</option>
+                    <option value="Ocupado" {% if espacio and espacio.estado=='Ocupado' %}selected{% endif %}>Ocupado
+                    </option>
+                    <option value="Reservado" {% if espacio and espacio.estado=='Reservado' %}selected{% endif %}>
+                        Reservado</option>
+                </select>
+                <input type="hidden" name="estado" value="{{ espacio.estado }}">
+            </div>
+
+            <button type="submit" class="btn-guardar">Actualizar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
