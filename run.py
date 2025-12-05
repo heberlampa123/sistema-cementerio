@@ -2,11 +2,20 @@ import os
 from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, request
 
-# controladores (blueprints)
-from controllers import (difunto_controller, espacio_controller, asignacion_controller,
-                         usuario_controller, acceso_controller, tipo_servicio_controller,
-                         servicio_controller, contrato_controller, pago_controller)
+# Controladores (blueprints)
+from controllers import (
+    difunto_controller,
+    espacio_controller,
+    asignacion_controller,
+    usuario_controller,
+    acceso_controller,
+    tipo_servicio_controller,
+    servicio_controller,
+    contrato_controller,
+    pago_controller
+)
 
+# Modelos
 from models.tipo_servicio_model import Tipo_servicio
 from models.servicio_model import Servicio
 from models.asignacion_model import Asignacion
@@ -15,22 +24,22 @@ from models.pago_model import Pago
 from models.espacio_model import Espacio
 from models.usuario_model import Usuario
 
-# db
+# Base de datos
 from database import db
 
 # -------------------------
-# Aplicación
+# Crear la app
 # -------------------------
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
 # -------------------------
-# Config
+# Configuración
 # -------------------------
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cementerio.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///cementerio.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change_this_secret")
 
-# upload folders (asegura que existan)
+# Carpetas de uploads
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static/uploads/difuntos")
 UPLOAD_FOLDER_SERVICIO = os.path.join(os.path.dirname(__file__), "static/uploads/servicios")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -66,20 +75,16 @@ def inject_active_path():
     return dict(is_active=is_active)
 
 # -------------------------
-# Rutas base (igual funcionalidad que tenías)
+# Rutas
 # -------------------------
 @app.route("/")
 def home():
-    # Si existe usuario o usuario_id → sesión iniciada
     if "usuario" in session or "usuario_id" in session:
         return redirect(url_for("inicio"))
-    else:
-        return redirect(url_for("index"))
-
+    return redirect(url_for("index"))
 
 @app.route("/inicio")
 def inicio():
-    # Estadísticas y data para el dashboard (misma lógica)
     total_servicios = Servicio.query.count()
     total_asignaciones = Asignacion.query.count()
     total_contratos = Contrato.query.count()
@@ -105,30 +110,26 @@ def inicio():
         espacios_ocupados=espacios_ocupados,
         espacios_ocupados_pct=espacios_ocupados_pct,
         current_year=datetime.now().year,
-        now=datetime.now().strftime("%Y-%m-%d %H:%M"),
+        now=datetime.now().strftime("%Y-%m-%d %H:%M")
     )
-
 
 @app.route("/index")
 def index():
-    tipo_servicios = Tipo_servicio.get_all()
+    tipo_servicios = Tipo_servicio.query.all()  # Evita el método custom si falla
     return render_template("index.html", tipo_servicios=tipo_servicios)
-
 
 @app.route("/contactos")
 def contactos():
     return render_template("contactos.html")
 
-
 # -------------------------
-# Crear usuario al iniciar
+# Crear usuario administrador automáticamente
 # -------------------------
 def ensure_admin():
     admin_username = os.environ.get("ADMIN_USERNAME", "admin@gmail.com")
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
     admin_name = os.environ.get("ADMIN_NAME", "Administrador")
 
-    # verificar dentro del contexto de la app (se llama desde app.app_context())
     existing = Usuario.query.filter_by(username=admin_username).first()
     if not existing:
         admin = Usuario(nombre=admin_name, username=admin_username, password=admin_password, rol="Administrador")
@@ -137,13 +138,12 @@ def ensure_admin():
     else:
         print("✔ Usuario administrador ya existe.")
 
-
 # -------------------------
-# Inicio (modo ejecución directa)
+# Ejecutar la app
 # -------------------------
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()
-        ensure_admin()
-    # puerto por defecto 5000, puedes cambiar con entorno o parámetro
-    app.run(debug=True)
+        db.create_all()  # Crea todas las tablas
+        ensure_admin()  # Crea admin si no existe
+    app.run(debug=True, port=int(os.environ.get("PORT", 5000)))
+
