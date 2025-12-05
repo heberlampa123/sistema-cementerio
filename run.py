@@ -2,20 +2,18 @@ import os
 from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, request
 
+# -------------------------
 # Controladores (blueprints)
+# -------------------------
 from controllers import (
-    difunto_controller,
-    espacio_controller,
-    asignacion_controller,
-    usuario_controller,
-    acceso_controller,
-    tipo_servicio_controller,
-    servicio_controller,
-    contrato_controller,
-    pago_controller
+    difunto_controller, espacio_controller, asignacion_controller,
+    usuario_controller, acceso_controller, tipo_servicio_controller,
+    servicio_controller, contrato_controller, pago_controller
 )
 
+# -------------------------
 # Modelos
+# -------------------------
 from models.tipo_servicio_model import Tipo_servicio
 from models.servicio_model import Servicio
 from models.asignacion_model import Asignacion
@@ -24,22 +22,25 @@ from models.pago_model import Pago
 from models.espacio_model import Espacio
 from models.usuario_model import Usuario
 
-# Base de datos
+# -------------------------
+# DB
+# -------------------------
 from database import db
 
 # -------------------------
-# Crear la app
+# Aplicación
 # -------------------------
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
 # -------------------------
-# Configuración
+# Config
 # -------------------------
+# URI de base de datos: prioriza DATABASE_URL (Postgres en Render), si no, SQLite local
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///cementerio.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change_this_secret")
 
-# Carpetas de uploads
+# Carpetas para uploads
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static/uploads/difuntos")
 UPLOAD_FOLDER_SERVICIO = os.path.join(os.path.dirname(__file__), "static/uploads/servicios")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -51,6 +52,28 @@ os.makedirs(UPLOAD_FOLDER_SERVICIO, exist_ok=True)
 # Inicializar extensiones
 # -------------------------
 db.init_app(app)
+
+# -------------------------
+# Crear tablas y admin automáticamente
+# -------------------------
+with app.app_context():
+    db.create_all()  # crea tablas que falten
+
+    # Crear usuario administrador si no existe
+    def ensure_admin():
+        admin_username = os.environ.get("ADMIN_USERNAME", "admin@gmail.com")
+        admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
+        admin_name = os.environ.get("ADMIN_NAME", "Administrador")
+
+        existing = Usuario.query.filter_by(username=admin_username).first()
+        if not existing:
+            admin = Usuario(nombre=admin_name, username=admin_username, password=admin_password, rol="Administrador")
+            admin.save()
+            print("⚡ Usuario administrador creado automáticamente.")
+        else:
+            print("✔ Usuario administrador ya existe.")
+
+    ensure_admin()
 
 # -------------------------
 # Registrar blueprints
@@ -75,13 +98,14 @@ def inject_active_path():
     return dict(is_active=is_active)
 
 # -------------------------
-# Rutas
+# Rutas base
 # -------------------------
 @app.route("/")
 def home():
     if "usuario" in session or "usuario_id" in session:
         return redirect(url_for("inicio"))
-    return redirect(url_for("index"))
+    else:
+        return redirect(url_for("index"))
 
 @app.route("/inicio")
 def inicio():
@@ -110,12 +134,12 @@ def inicio():
         espacios_ocupados=espacios_ocupados,
         espacios_ocupados_pct=espacios_ocupados_pct,
         current_year=datetime.now().year,
-        now=datetime.now().strftime("%Y-%m-%d %H:%M")
+        now=datetime.now().strftime("%Y-%m-%d %H:%M"),
     )
 
 @app.route("/index")
 def index():
-    tipo_servicios = Tipo_servicio.query.all()  # Evita el método custom si falla
+    tipo_servicios = Tipo_servicio.get_all()
     return render_template("index.html", tipo_servicios=tipo_servicios)
 
 @app.route("/contactos")
@@ -123,27 +147,9 @@ def contactos():
     return render_template("contactos.html")
 
 # -------------------------
-# Crear usuario administrador automáticamente
-# -------------------------
-def ensure_admin():
-    admin_username = os.environ.get("ADMIN_USERNAME", "admin@gmail.com")
-    admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
-    admin_name = os.environ.get("ADMIN_NAME", "Administrador")
-
-    existing = Usuario.query.filter_by(username=admin_username).first()
-    if not existing:
-        admin = Usuario(nombre=admin_name, username=admin_username, password=admin_password, rol="Administrador")
-        admin.save()
-        print("⚡ Usuario administrador creado automáticamente.")
-    else:
-        print("✔ Usuario administrador ya existe.")
-
-# -------------------------
-# Ejecutar la app
+# Ejecutar local (debug)
 # -------------------------
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()  # Crea todas las tablas
-        ensure_admin()  # Crea admin si no existe
-    app.run(debug=True, port=int(os.environ.get("PORT", 5000)))
+    app.run(debug=True)
+
 
